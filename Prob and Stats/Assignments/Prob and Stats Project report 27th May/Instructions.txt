@@ -1,0 +1,47 @@
+Dear Students, 
+For prob & Stats report . See the following guideline. 
+. You can select any topic This report has maximum 5 marks.
+. Only two students will be in group. Each group  can choose any one topic .and send
+ the name of the topic duplication is not allowed. 
+
+
+
+
+1.Statistical Measures of Data: Mean, Variance SD ........etc.
+
+
+2.Probability Distributions of Random Variables 
+
+
+3. Discrete
+Probability distributions 
+a. Binomial probability Distribution 
+b. Poisson Distribution
+C. Hyper-geometric distribution  
+d. Geometric distribution 
+e. Multi nomial  distribution 
+
+
+4.Continuous
+Probability distributions (Normal distribution)
+
+
+5.Estimation of Parameters (point and Confidence interval) 
+
+
+6.Test of
+Hypothesis testing (Z ,or t) 
+
+
+7.Regression & Correlation ( linear )
+8.Regression & Correlation (Multiple )
+
+9.Analysis
+of Variance
+. You can take help from Internet . 
+. You just read the article / report and describe how Probability and Statistics (techniques/methods ) can be applied in the field of  computer Science ,this is your main Task. 
+. You can also share the references in the report.
+. You are not restrict or stick/bound  to prepare a report of maximum pages  , It may be 5 - 10 or so on depends on your topic. 
+. All member must work together as a team member , a viva will be conducted.
+NOTE : THE LAST DATE OF  REPORT SUBMISSION (both soft  (in GCR) and hard copy (in my office) is 27 - 05 - 2022.
+ At 3: 00 pm sharp. after the deadline marks will be deduct. for further query e - mail me .
