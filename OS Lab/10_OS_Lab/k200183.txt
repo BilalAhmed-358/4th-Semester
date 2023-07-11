@@ -1,0 +1,97 @@
+<---------- TASK 01 ---------->
+
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+void handler_siguser1(int signo)
+{
+    if (signo == SIGUSR1)
+        printf("received SIGUSR1\n");
+    else if (signo == SIGKILL)
+        printf("received SIGKILL\n");
+    else if (signo == SIGSTOP)
+        printf("received SIGSTOP\n");
+}
+int main(void)
+{
+    struct sigaction sa1;
+    sa1.sa_flags = SA_RESTART;
+    sa1.sa_handler = handler_siguser1;
+
+    if (sigaction(SIGUSR1, &sa1, NULL) == -1)
+        printf("\ncan't catch SIGUSR1\n");
+    if (sigaction(SIGKILL, &sa1, NULL) == -1)
+        printf("\ncan't catch SIGKILL\n");
+    if (sigaction(SIGSTOP, &sa1, NULL) == -1)
+        printf("\ncan't catch SIGSTOP\n");
+    // A long long wait so that we can easily issue a signal to this process
+    while (1)
+    {
+        // printf("Program reached here.\n");
+        kill(getpid(), SIGUSR1);
+        sleep(2);
+        kill(getpid(), SIGSTOP);
+        sleep(2);
+        kill(getpid(), SIGKILL);
+    }
+    return 0;
+}
+
+<---------- TASK 02 ---------->
+
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+void sig_handler(int signo)
+{
+    if (signo == SIGSTOP)
+        printf("This program is immune to SIGSTOP.\n");
+    if (signo == SIGKILL)
+        printf("This program is immue to SIGKILL.\n");
+}
+int main(void)
+{
+    struct sigaction sa, sa1;
+    sa.sa_flags = SA_RESTART;
+    sa.sa_handler = sig_handler;
+    sigaction(SIGSTOP, &sa, NULL);
+    sa1.sa_flags = SA_RESTART;
+    sa1.sa_handler = sig_handler;
+    sigaction(SIGKILL, &sa1, NULL);
+
+    while (1)
+    {
+        sleep(2);
+        kill(getpid(), SIGSTOP);
+        sleep(2);
+        kill(getpid(), SIGKILL);
+    }
+    return 0;
+}
+
+<---------- TASK 03 ---------->
+
+#include <stdio.h>
+#include <omp.h>
+#include <semaphore.h>
+#include <unistd.h>
+sem_t semlock;
+int main()
+{
+    sem_init(&semlock, 0, 1);
+    int a[5] = {1, 2, 3, 4, 5};
+    int b[5] = {6, 7, 8, 9, 10};
+    int c[5];
+    int tid;
+
+#pragma omp parallel num_threads(5)
+    {
+        sem_wait(&semlock);
+        tid = omp_get_thread_num();
+        c[tid] = a[tid] + b[tid];
+        printf("c[%d]=%d\n", tid, c[tid]);
+        alarm(5);
+        sem_post(&semlock);
+    }
+    sem_destroy(&semlock);
+}

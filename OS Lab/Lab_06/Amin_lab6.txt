@@ -1,0 +1,174 @@
+#include<stdio.h>
+#include <sys/types.h>
+#include<unistd.h>
+#include<wait.h>
+#include <stdlib.h>
+int main(){
+	int fd[2]; 
+	// fd[0] - read 
+	// fd[1] - write 
+	if (pipe(fd) == -1)
+	{ 
+		printf("An error ocurred with opening the pipe\n");
+		return 1; 
+	}
+	int id = fork();
+	if (id == 0) 
+	{ 
+		int x;
+		char arr[100];
+		printf("Input a msg for parent: ");
+		fgets(arr,sizeof(arr),stdin);
+		if(write(fd[1], arr, sizeof(arr))==-1){
+			printf("Error Occured While Writing");
+			return 2;
+		} 
+	} 
+	else{
+		int y;
+		char arr[100];
+		if(read(fd[0],arr,sizeof(arr))==-1){	
+			printf("Error Occured While reading");
+			return 2;
+		}	
+		printf("GOT FROM CHILD PROCESS %s\n",arr);
+	}
+		return 0; 
+}
+------------------------------------------------
+Q2(Write)
+
+
+
+#include<stdio.h>
+#include<sys/types.h>
+#include<sys/ipc.h>
+#include<sys/msg.h>
+#include<unistd.h>
+#include<wait.h>
+#include<stdlib.h>
+struct msg{
+	long int a;
+	char arr[20];
+};
+int main(){ 
+	 struct msg var;
+	 int msgid=msgget(12345,0666|IPC_CREAT);
+	 if(msgid==-1){
+	 	printf("error");
+	 }
+	 else{
+	 	var.a=1;
+		fgets(var.arr,sizeof(var.arr),stdin);
+		if(msgsnd(msgid,&var,sizeof(var),0)==-1)
+			printf("error");
+
+	 } 
+}
+
+
+--------------------------------------------
+Q2(read)
+
+#include<stdio.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<wait.h>
+#include<sys/ipc.h>
+#include<sys/msg.h>
+#include<stdlib.h>
+struct msg{
+	long int a;
+	char arr[20];
+};
+int main(){ 
+	 struct msg var;
+	 int msgid=msgget(12345,0666);
+	 if(msgid==-1){
+	 	printf("error");
+	 }
+	 else{
+	 	var.a=1;
+
+		//fgets(var.arr,sizeof(var.arr),stdin);
+
+		msgrcv(msgid,&var,sizeof(var),1,0);
+		printf("first message:%s\n",var.arr);
+		
+		msgrcv(msgid,&var,sizeof(var),1,0);
+		printf("second message:%s\n",var.arr);
+	 	
+		msgrcv(msgid,&var,sizeof(var),1,1);
+		printf("third message:%s\n",var.arr);
+	 } 
+}
+-----------------------------------
+Q4
+
+
+#include<sys/types.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+#include<stdio.h>
+#include<stdlib.h>
+
+
+int main(){
+	int shmid=shmget(1234,10,0666|IPC_CREAT);
+	int *s;
+
+	s=(int*)shmat(shmid,NULL,0);
+	*s=0;
+	
+}
+
+
+
+
+
+
+#include<sys/types.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+#include<stdio.h>
+#include<stdlib.h>
+int main(){
+	int shmid=shmget(12345,10,0666|IPC_CREAT);
+	int *s;
+
+	s=(int*)shmat(shmid,NULL,0);
+	*s=1;
+	
+}
+
+
+
+
+
+
+#include<sys/types.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+#include<stdio.h>
+#include<stdlib.h>
+int main(){
+	int shmid=shmget(1234,10,0666);
+	int *s;
+	s=(int*)shmat(shmid,NULL,0);
+	printf("%d\n",*s);
+	int shmid1=shmget(12345,10,0666);
+	int *p;
+	p=(int*)shmat(shmid1,NULL,0);
+	printf("%d\n",*p);
+	int i=0;
+	printf("Enter n:");
+	scanf("%d",&i);
+	int j,fib;
+	for(j=0;j<i;j++){
+		fib=*s+*p;
+		*s=*p;
+		*p=fib;
+		printf("%d\n",fib);
+	}	
+}
+

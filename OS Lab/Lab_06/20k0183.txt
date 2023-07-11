@@ -1,0 +1,261 @@
+|-------------------------- Question 01 --------------------------|
+
+
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <wait.h>
+#include <stdlib.h>
+#include <string.h>
+int main(int argc, char *argv[])
+{
+	char *str = "This is a string\n";
+	int id[2];
+	if (pipe(id) == -1)
+	{
+		printf("The pipe couldn't be created, Aborting the program.\n");
+		return 0;
+	}
+	int fork_child = fork();
+	if (fork_child == 0)
+	{
+		close(id[0]);
+		char message[100]={"This is a message send by the child.\0"};
+		write(id[1],message,sizeof(message));
+		close(id[1]);
+	}
+	else
+	{
+		wait(NULL);
+		close(id[1]);
+		char read_message[100];
+		read(id[0],read_message,sizeof(read_message));
+		printf("%s\n",read_message);
+		close(id[0]);
+	}
+}
+
+
+|-------------------------- Question 02 --------------------------| 
+
+
+Read:
+# include <stdio.h>
+# include <sys/stat.h>
+# include <sys/types.h>
+# include <fcntl.h>
+# include <unistd.h>
+#include<string.h> 
+
+int main()
+{
+    int id, retval;
+    char sentence[30];
+    id = open ("pipe", O_RDONLY);
+    read(id, sentence, sizeof(sentence));
+    fflush(stdin);
+    printf("The message read through FIFO for the first time is:\n");
+    printf("%s\n",sentence);
+    close(id);
+    id = open ("pipe", O_RDONLY);
+    read(id, sentence, sizeof(sentence));
+    fflush(stdin);
+    printf("The message read through FIFO for the second time is:\n");
+    printf("%s\n",sentence);
+    close(id);
+    id = open ("pipe", O_RDONLY);
+    read(id, sentence, sizeof(sentence));
+    fflush(stdin);
+    printf("The message read through FIFO for the third time is:\n");
+    printf("%s\n",sentence);
+    close(id);
+    return 0;
+}
+Write:
+# include <stdio.h>
+# include <sys/stat.h>
+# include <sys/types.h>
+# include <fcntl.h>
+# include <unistd.h>
+#include<string.h> 
+
+int main()
+{
+    int id, retval;
+    printf("Enter the message you want to send\n");
+    char sentence[30];
+    fgets(sentence, sizeof(sentence),stdin);
+    fflush(stdin);
+    retval=mkfifo("pipe",0666);
+    id = open ("pipe", O_WRONLY);
+    write(id, sentence, sizeof(sentence));
+    close(id);
+    return 0;
+}
+
+
+|-------------------------- Question 03 --------------------------| 
+
+
+Server:
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#define MAXSIZE 100
+
+void die(char *str)
+{
+	perror(str);
+	exit(1);
+}
+int main()
+{
+	char c;
+	int shmid;
+	key_t key;
+	char *shm, *s;
+	key = 2211;
+
+	if ((shmid = shmget(key, MAXSIZE, IPC_CREAT | 0666)) < 0)
+	{
+		printf("There was an error in 1.\n");
+		exit(0);
+	}
+	if ((shm = shmat(shmid, NULL, 0)) == (char *)-1)
+	{
+		printf("There was an error.\n");
+		exit(0);
+	}
+	s = shm;
+	*s = '9';
+	while (strcmp(shm, "ready") != 0)
+	{
+		sleep(1);
+	}
+	printf("ready\n");
+	*shm = '*';
+	while (*shm != '*')
+	{
+		sleep(1);
+		putchar(*shm);
+		printf("\n");
+	}
+	*shm = '*';
+}
+Client:
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#define MAXSIZE 27
+
+void die(char *str)
+{
+    perror(str);
+    exit(1);
+}
+
+int main(void)
+{
+    int shmid, num, n = 5;
+    key_t key;
+    char *shm, *s;
+
+    key = 2211;
+    fflush(stdin);
+    if ((shmid = shmget(key, MAXSIZE, IPC_CREAT | 0666)) < 0)
+        die("shmget");
+    if ((shm = shmat(shmid, NULL, 0)) == (char *)-1)
+        die("shmat");
+    s = shm;
+    putchar(*s);
+    num = (int)(*s);
+    *shm = '*';
+    strcpy(shm, "ready");
+    printf("\n");
+    while (*shm != '*')
+    {
+        sleep(1);
+    }
+    printf("star received.\n"); 
+    exit(0);
+}
+
+
+|-------------------------- Question 04 --------------------------| 
+
+
+Process A:
+
+
+#include<sys/types.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+#include<stdio.h>
+#include<stdlib.h>
+
+
+int main(){
+	int shmid=shmget(4321,10,0666|IPC_CREAT);
+	int *a;
+
+	a=(int*)shmat(shmid,NULL,0);
+	*a=0;
+	
+}
+
+
+Process B:
+
+
+#include<sys/types.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+#include<stdio.h>
+#include<stdlib.h>
+int main(){
+	int shmid=shmget(9876,10,0666|IPC_CREAT);
+	int *b;
+
+	b=(int*)shmat(shmid,NULL,0);
+	*b=1;
+	
+}
+
+
+Process C:
+
+
+#include<sys/types.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+#include<stdio.h>
+#include<stdlib.h>
+int main(){
+	int shmid=shmget(4321,10,0666);
+	int *a;
+	a=(int*)shmat(shmid,NULL,0);
+	printf("%d\n",*a);
+	int shmid1=shmget(9876,10,0666);
+	int *b;
+	b=(int*)shmat(shmid1,NULL,0);
+	printf("%d\n",*b);
+	int i=0;
+	printf("Enter n:");
+	scanf("%d",&i);
+	int j,fib;
+	for(j=0;j<i;j++){
+		fib=*a+*b;
+		*a=*b;
+		*b=fib;
+		printf("%d\n",fib);
+	}	
+}
+

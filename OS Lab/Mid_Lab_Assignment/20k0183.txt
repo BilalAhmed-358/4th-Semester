@@ -1,0 +1,110 @@
+|--------------- Question 01 ---------------|
+
+truncate -s 2K Image{1..333}.jpg
+truncate -s 4K Program{333..666}.c
+truncate -s 6K Script{666..999}.sh
+
+|--------------- Question 02 ---------------|
+
+rename 's/jpg/JPEG/' *.jpg
+
+|--------------- Question 03 ---------------|
+
+ls *sh --block-size=5K
+
+|--------------- Question 04 ---------------|
+
+find -type f -name "*.sh" -size +5k -ls
+
+|--------------- Question 05 ---------------|
+
+ls -l
+
+|--------------- Question 06 ---------------|
+
+#! /bin/bash
+for f in *.JPEG
+do
+        mv $f "img_$f"
+done    
+
+|--------------- Question 07 ---------------|
+
+cd myexecutebles
+
+for f in *.exe
+do
+	mv $f myexecutables/
+
+done
+
+|--------------- Question 08 ---------------|
+
+mkdir shelldir
+mkdir cdir
+mkdir jpgdir
+
+for f in *.sh
+do
+    mv $f shelldir
+done
+
+for f in *.c
+do
+    mv $f cdir
+done
+
+for f in *.JPEG
+do
+    mv $f jpgdir
+done
+
+|--------------- Question 09 ---------------|
+
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <stdlib.h>
+int main(){
+	int id1=fork();
+	if(id1==0){
+		sleep(1);
+		printf("\nWise Son!\n");
+		return 16;
+	}
+	else{
+		wait(NULL);
+		printf("\nfirst child has exited\n");
+		int id2=fork();
+		if(id2==0){
+			printf("\nSimple Son!\n");
+			execlp("/bin/sh","/bin/sh","-c","cat /sys/class/net/*/address",NULL);
+			return 17;
+		}
+		wait(NULL);
+		printf("\nsecond child has exited\n");
+		int id3=fork();
+		if(id3==0){
+			printf("\nWicked Son!\n");
+			sleep(7);
+			execlp("/bin/sh","/bin/sh","-c","date","date",NULL);
+			return 20;
+		}
+		wait(NULL);
+		printf("\nThird child has exited\n");
+		int id4=fork();
+		if(id4==0){
+			printf("\nSon Who Doesn't Know How to Ask Questions!\n");
+			printf("Grand parent id:");	
+			return 0;	
+		}
+		wait(NULL);
+		printf(" %d",getppid());
+		printf("\nFourth child has exited\n");
+	}
+
+
+
+	return 0;
+}

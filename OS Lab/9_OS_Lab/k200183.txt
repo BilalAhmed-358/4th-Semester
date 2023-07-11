@@ -1,0 +1,163 @@
+<---------- TASK 01(a) ---------->
+
+#include <stdio.h>
+#include <semaphore.h>
+#include <pthread.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+sem_t Icecreamremaining;
+void *icecreamservingroutine(void *args)
+{
+    sem_wait(&Icecreamremaining);
+    /*This function will iteratively get called for each thread and will be protected by a semaphore,
+    we make an assumption that each person will take 3 secs to finish his iceream*/
+    printf("Serving icecream to person %d.\n", *(int *)args);
+    if (*(int *)args == 2)
+    {
+        printf("All people have finished their icereams.\n");
+    }
+    sleep(3);
+    free(args);
+    sem_post(&Icecreamremaining);
+}
+int main()
+{
+    pthread_t people[3];
+    sem_init(&Icecreamremaining, 0, 1);
+    int i;
+    for (i = 0; i < 3; i++)
+    {
+        int *a = malloc(sizeof(int));
+        *a = i;
+
+        if (pthread_create(&people[i], NULL, &icecreamservingroutine, a) != 0)
+        {
+            printf("Failed to create threads.\n");
+        }
+    }
+    for (i = 0; i < 3; i++)
+    {
+
+        if (pthread_join(people[i], NULL) != 0)
+        {
+            printf("Failed to join threads.\n");
+        }
+    }
+    sem_destroy(&Icecreamremaining);
+}
+
+<---------- TASK 01(b) ---------->
+
+#include <stdio.h>
+#include <semaphore.h>
+#include <pthread.h>
+#include <stdlib.h>
+#include <unistd.h>
+sem_t Icecreamremaining;
+typedef struct people_thread
+{
+    pthread_t people;
+    int money;
+    int id;
+} people_thread;
+people_thread customers[3];
+
+void *icecreamservingroutine(void *args)
+{
+    people_thread index = *(people_thread *)args;
+    sem_wait(&Icecreamremaining);
+    /*This function will iteratively get called for each thread and will be protected by a semaphore,
+    we make an assumption that each person will take 3 secs to finish his icecream and counting his money*/
+    printf("Serving icecream to person %d.\n", index.id);
+    printf("Counting money...\n");
+    sleep(2);
+    printf("Customer %d has Rs.%d/-. \n", index.id, index.money);
+    printf("The icecream costs Rs.%d/-, after payment the customer has Rs.%d/- amount remaining.\n\n", 100, index.money - 100);
+    if (index.id == 3)
+    {
+        printf("All people have finished their icereams.\n");
+    }
+
+    sem_post(&Icecreamremaining);
+}
+int main()
+{
+    sem_init(&Icecreamremaining, 0, 1);
+    int i;
+    for (i = 0; i < 3; i++)
+    {
+        customers[i].id = i + 1;
+        customers[i].money = rand() % 1000;
+
+        if (pthread_create(&customers[i].people, NULL, &icecreamservingroutine, (void *)&customers[i]) != 0)
+        {
+            printf("Failed to create threads.\n");
+        }
+    }
+    for (i = 0; i < 3; i++)
+    {
+
+        if (pthread_join(customers[i].people, NULL) != 0)
+        {
+            printf("Failed to join threads.\n");
+        }
+    }
+    sem_destroy(&Icecreamremaining);
+}
+
+<----------  TASK 02   ---------->
+
+#include <stdio.h>
+#include <semaphore.h>
+#include <pthread.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+/*We are assuming that each batch contains 10 customers
+Each customer has to:
+i) weigh his luggage (takes 4 seconds)
+ii) get it checked (takes 7 seconds)
+iii) get a boarding pass (takes 3 seconds)*/
+
+/*
+    We also make an assumption that At a given time 5 boarding terminals are available for custumers.
+*/
+
+sem_t terminal;
+void *boarding_routine(void *args)
+{
+    sem_wait(&terminal);
+    int index = *(int *)args;
+    printf("PASSENGER %d arrived at the boarding terminal.\n\n", index);
+    printf("PASSENGER %d arrived at weighing his/her luggage...\n\n", index);
+    sleep(4);
+    printf("PASSENGER %d getting his/her luggage checked...\n\n", index);
+    sleep(7);
+    printf("PASSENGER %d receiving his/her boarding pass...\n\n", index);
+    sleep(3);
+    sem_post(&terminal);
+}
+int main()
+{
+    pthread_t passengers[10];
+    sem_init(&terminal, 0, 5);
+    int i;
+    for (i = 0; i < 10; i++)
+    {
+        int *a = malloc(sizeof(int));
+        *a = i + 1;
+        if (pthread_create(&passengers[i], NULL, &boarding_routine, (void *)a) != 0)
+        {
+            printf("Couldn't create thread %d\n.", i);
+        }
+    }
+    for (i = 0; i < 10; i++)
+    {
+        if (pthread_join(passengers[i], NULL) != 0)
+        {
+            printf("Couldn't join thread %d\n.", i);
+        }
+    }
+    sem_destroy(&terminal);
+}
