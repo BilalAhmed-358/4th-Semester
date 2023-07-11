@@ -1,0 +1,2 @@
+What class of languages do human languages belong to (Regular, Context Free, context sensitive, 
+recursively enumerable or others).

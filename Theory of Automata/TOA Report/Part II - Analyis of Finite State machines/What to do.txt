@@ -1,0 +1,6 @@
+Analysis of finite state machines, context free grammars in any one of these.
+Natural Language Processing.
+Computational biology.
+Computer Music.
+Computer Graphics.
+Lexer/Parsers.
