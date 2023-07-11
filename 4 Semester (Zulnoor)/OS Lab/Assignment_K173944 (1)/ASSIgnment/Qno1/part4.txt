@@ -1,0 +1,1 @@
+As we can see from outputs of both algorithms ,the avg waiting time of SJF is very smaller than the FCFS.

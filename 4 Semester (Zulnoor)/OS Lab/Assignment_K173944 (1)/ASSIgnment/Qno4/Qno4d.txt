@@ -1,0 +1,2 @@
+No, bash doesn't have "pointers", but it does have references.
+
