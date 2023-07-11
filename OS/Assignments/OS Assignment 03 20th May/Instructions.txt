@@ -1,0 +1,6 @@
+Q8 of assignment 3.Calculate the page faults using '4 free frames' for second chance
+ page replacement with the given page reference string :
+
+3,0,1,2,7,0,3,0,4,2,3,0,3,0,3,2,1,2,0,1,7,0,1
+
+this is the last graded assignment. any next assignment will be for exam preparation and ungraded.
