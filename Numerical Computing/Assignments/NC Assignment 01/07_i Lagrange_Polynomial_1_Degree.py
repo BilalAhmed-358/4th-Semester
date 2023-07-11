@@ -1,0 +1,1 @@
+print("This is Lagrange Polynomial 1st Degree file")

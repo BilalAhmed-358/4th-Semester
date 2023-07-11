@@ -1,0 +1,16 @@
+Assignment # 03
+Coding #07
+Differential Equations:
+Modify Euler and 4-RK method
+
+
+Coding #08
+Direct Method for solving linear system:
+LU decomposition and LDLt Factorization 
+
+Coding #09
+Iterative methods for solving linear system
+Gauss-Siedel and Jacobi’s methods.
+
+
+Before Final Exam
